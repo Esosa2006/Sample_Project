@@ -1,0 +1,47 @@
+name: Energy Efficiency Quality Gate
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  JAVA_VERSION: '17'
+  SOURCE_PATH: 'src/main/java'
+  ANALYZER_URL: 'https://github.com/Esosa2006/Energy-Analyzer/releases/download/v1.0.0/java-energy-analyzer-1.0.0.jar'
+
+jobs:
+  energy-analysis:
+    name: Energy Efficiency Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+
+      - name: Download Energy Analyzer
+        run: |
+          curl -L ${{ env.ANALYZER_URL }} -o energy-analyzer.jar
+
+      - name: Run Energy Analysis
+        run: |
+          java \
+            -Dspring.main.web-application-type=none \
+            -jar energy-analyzer.jar \
+            ${{ env.SOURCE_PATH }} \
+            --name="${{ github.repository }}" \
+            | tee energy-report.txt
+
+      - name: Upload Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: energy-report
+          path: energy-report.txt
+          retention-days: 30
