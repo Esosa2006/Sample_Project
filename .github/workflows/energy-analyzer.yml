@@ -33,10 +33,15 @@ jobs:
         run: |
           java \
             -Dspring.main.web-application-type=none \
+            -Denergy-analyzer.thresholds.minimum-eei-threshold=60 \
+            -Denergy-analyzer.thresholds.fail-build-on-violation=true \
             -jar energy-analyzer.jar \
             ${{ env.SOURCE_PATH }} \
             --name="${{ github.repository }}" \
             | tee energy-report.txt
+          
+          EXIT_CODE=${PIPESTATUS[0]}
+          exit $EXIT_CODE
 
       - name: Upload Report
         uses: actions/upload-artifact@v4
