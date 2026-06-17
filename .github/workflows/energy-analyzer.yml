@@ -33,7 +33,7 @@ jobs:
         run: |
           java \
             -Dspring.main.web-application-type=none \
-            -Denergy-analyzer.thresholds.minimum-eei-threshold=20 \
+            -Denergy-analyzer.thresholds.minimum-eei-threshold=60 \
             -Denergy-analyzer.thresholds.fail-build-on-violation=true \
             -jar energy-analyzer.jar \
             ${{ env.SOURCE_PATH }} \
